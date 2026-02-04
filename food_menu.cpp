@@ -3,9 +3,16 @@
 #include <string>
 #include <cctype>
 #include <cstdlib>
-// #include "qrcode.hpp"
 
 using namespace std;
+
+// Helper function to convert string to lowercase
+string toLower(string str)
+{
+    for (auto &c : str)
+        c = tolower(c);
+    return str;
+}
 
 int main()
 {
@@ -35,7 +42,7 @@ int main()
     }
 
     cout << "\n";
-    cout << "Welcome to Taco Bell " << user <<"!" << endl;
+    cout << "Welcome to Taco Bell " << user << "!" << endl;
     cout << "\t\t\t MENU " << endl;
 
     cout << "what would you like to have?" << endl;
@@ -46,58 +53,129 @@ int main()
     {
         cout << "JUICES MENU" << endl;
         cout << "------------" << endl;
-        
+
         string juiceNames[] = {"Pineapple lime", "Cranberry crush", "Mango peach", "Dragonfruit berry"};
         int juicePrices[] = {159, 189, 179, 199};
         int juiceCount = 4;
-        
+
         for (int i = 0; i < juiceCount; i++)
         {
             cout << (i + 1) << ". " << juiceNames[i];
             cout << ":" << juicePrices[i] << "/-" << endl;
         }
-        
+
         cout << "which juice would you like to have?: ";
         cin >> ws;
         getline(cin, js);
-        file << "Juice: " << js << endl;
-        
-        // Find selected juice price
 
-        for (int i = 0; i < juiceCount; i++)
+        // Convert to lowercase for case-insensitive matching
+        string jsLower = toLower(js);
+        bool juiceFound = false;
+        int choice = -1;
+
+        // Try numeric match first
+        try
         {
-            if (js == juiceNames[i] || js == to_string(i + 1))
+            choice = stoi(jsLower);
+            if (choice >= 1 && choice <= juiceCount)
             {
-                drinkPrice = juicePrices[i];
-                break;
+                drinkPrice = juicePrices[choice - 1];
+                juiceFound = true;
+                js = juiceNames[choice - 1]; // Update js to actual name
             }
         }
+        catch (...)
+        {
+            // Not a number, try name matching
+        }
+
+        // If not found, try name matching (case-insensitive)
+        if (!juiceFound)
+        {
+            for (int i = 0; i < juiceCount; i++)
+            {
+                if (jsLower.find(toLower(juiceNames[i])) != string::npos)
+                {
+                    drinkPrice = juicePrices[i];
+                    juiceFound = true;
+                    js = juiceNames[i]; // Update js to actual name
+                    break;
+                }
+            }
+        }
+
+        if (!juiceFound)
+        {
+            cout << "Invalid juice selection! Please enter a number (1-4) or juice name." << endl;
+            drinkPrice = 0;
+        }
+
+        file << "Juice: " << js << endl;
     }
 
     else if (ch == 2)
     {
         cout << "SHAKES MENU" << endl;
         cout << "-----------" << endl;
-        int shakes = 0;
-        cout << "1. Sweet vanilla";
-        shakes = 149;
-        cout << ":" << shakes << "/-" << endl;
-        cout << "2. Mexican chocolate";
-        shakes = 169;
-        cout << ":" << shakes << "/-" << endl;
-        cout << "3. Dulce de leche";
-        shakes = 199;
-        cout << ":" << shakes << "/-" << endl;
-        cout << "4. Wild strawberry";
-        shakes = 159;
-        cout << ":" << shakes << "/-" << endl;
+
+        string shakeNames[] = {"Sweet vanilla", "Mexican chocolate", "Dulce de leche", "Wild strawberry"};
+        int shakePrices[] = {149, 169, 199, 159};
+        int shakeCount = 4;
+
+        for (int i = 0; i < shakeCount; i++)
+        {
+            cout << (i + 1) << ". " << shakeNames[i];
+            cout << ":" << shakePrices[i] << "/-" << endl;
+        }
+
         cout << "which shake would you like to have?: ";
         cin >> ws;
-        getline(cin, sh);
-        file << "Shake: " << sh << endl;
-        drinkPrice = shakes;
-    }
+        getline(cin, js);
 
+        // Convert to lowercase for case-insensitive matching
+        string jsLower = toLower(js);
+        bool shakeFound = false;
+        int choice = -1;
+
+        // Try numeric match first
+        try
+        {
+            choice = stoi(jsLower);
+            if (choice >= 1 && choice <= shakeCount)
+            {
+                drinkPrice = shakePrices[choice - 1];
+                shakeFound = true;
+                js = shakeNames[choice - 1]; // Update js to actual name
+            }
+        }
+        catch (...)
+        {
+            // Not a number, try name matching
+        }
+
+        // If not found, try name matching (case-insensitive)
+        if (!shakeFound)
+        {
+            for (int i = 0; i < shakeCount; i++)
+            {
+                if (jsLower.find(toLower(shakeNames[i])) != string::npos)
+                {
+                    drinkPrice = shakePrices[i];
+                    shakeFound = true;
+                    js = shakeNames[i]; // Update js to actual name
+                    break;
+                }
+            }
+        }
+
+        if (!shakeFound)
+        {
+            cout << "Invalid shake selection! Please enter a number (1-4) or shake name." << endl;
+            drinkPrice = 0;
+        }
+
+        file << "Shake: " << js << endl;
+    }
     else
     {
         cout << "Invalid selection for drinks." << endl;
@@ -108,7 +186,7 @@ int main()
     cin >> pm;
     file << "Main course (y/n): " << pm << endl;
 
-    if (pm == 'yes' || pm == 'YES' || pm == 'y' || pm == 'Y')
+    if (pm == 'y' || pm == 'Y')
     {
         cout << "please enter your choice <3 " << endl;
         cout << "Wrap or Taco (press 1 for wraps and 2 for taco): ";
@@ -155,7 +233,7 @@ int main()
             cout << "4. Cheesy lava taco";
             tacos = 179;
             cout << ":" << tacos << "/-" << endl;
-            cout << "which taco would you like to have? ";
+            cout << "w hich taco would you like to have? ";
             cin >> ws;
             getline(cin, tc);
             file << "Taco: " << tc << endl;
@@ -193,7 +271,6 @@ int main()
         totalBill += drinkPrice;
     }
 
-    
     else if (ch != 1 && ch != 2)
     {
         cout << "No drinks were selected." << endl;
@@ -232,23 +309,108 @@ int main()
     if (pm1 == 1)
     {
         cout << "\nOpening UPI QR Code..." << endl;
-        string upiLink =
-            "upi://pay?"
-            "pa=bhawyagugdodia@fam&"
-            "pn=TacoBell&"
-            "am=" +
-            to_string((int)totalBill) +
-            "&cu=INR";
+        
+        // Create proper UPI link: upi://pay?pa=<UPI_ID>&pn=<NAME>&am=<AMOUNT>&cu=INR
+        string upiLink = "upi://pay?pa=9625065557@upi&pn=TacoBell&am=" + 
+                         to_string((int)totalBill) + "&cu=INR";
 
-        string qrURL = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + upiLink;
-        system(("start " + qrURL).c_str());
+        // Create HTML file with QR code generator
+        ofstream htmlFile("qr_payment.html");
+        htmlFile << "<!DOCTYPE html>" << endl;
+        htmlFile << "<html lang=\"en\">" << endl;
+        htmlFile << "<head>" << endl;
+        htmlFile << "    <meta charset=\"UTF-8\">" << endl;
+        htmlFile << "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" << endl;
+        htmlFile << "    <title>Taco Bell - UPI Payment QR Code</title>" << endl;
+        htmlFile << "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js\"></script>" << endl;
+        htmlFile << "    <style>" << endl;
+        htmlFile << "        body {" << endl;
+        htmlFile << "            font-family: Arial, sans-serif;" << endl;
+        htmlFile << "            display: flex;" << endl;
+        htmlFile << "            justify-content: center;" << endl;
+        htmlFile << "            align-items: center;" << endl;
+        htmlFile << "            min-height: 100vh;" << endl;
+        htmlFile << "            margin: 0;" << endl;
+        htmlFile << "            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        .container {" << endl;
+        htmlFile << "            background: white;" << endl;
+        htmlFile << "            padding: 40px;" << endl;
+        htmlFile << "            border-radius: 15px;" << endl;
+        htmlFile << "            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);" << endl;
+        htmlFile << "            text-align: center;" << endl;
+        htmlFile << "            max-width: 500px;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        h1 {" << endl;
+        htmlFile << "            color: #333;" << endl;
+        htmlFile << "            margin-bottom: 10px;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        .subtitle {" << endl;
+        htmlFile << "            color: #666;" << endl;
+        htmlFile << "            margin-bottom: 30px;" << endl;
+        htmlFile << "            font-size: 16px;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        #qrcode {" << endl;
+        htmlFile << "            display: inline-block;" << endl;
+        htmlFile << "            margin: 20px 0;" << endl;
+        htmlFile << "            padding: 20px;" << endl;
+        htmlFile << "            background: #f5f5f5;" << endl;
+        htmlFile << "            border-radius: 10px;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        .amount {" << endl;
+        htmlFile << "            font-size: 24px;" << endl;
+        htmlFile << "            color: #667eea;" << endl;
+        htmlFile << "            font-weight: bold;" << endl;
+        htmlFile << "            margin: 20px 0;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        .upi-id {" << endl;
+        htmlFile << "            color: #666;" << endl;
+        htmlFile << "            margin: 10px 0;" << endl;
+        htmlFile << "            font-size: 14px;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "        .instructions {" << endl;
+        htmlFile << "            color: #999;" << endl;
+        htmlFile << "            margin-top: 20px;" << endl;
+        htmlFile << "            font-size: 12px;" << endl;
+        htmlFile << "        }" << endl;
+        htmlFile << "    </style>" << endl;
+        htmlFile << "</head>" << endl;
+        htmlFile << "<body>" << endl;
+        htmlFile << "    <div class=\"container\">" << endl;
+        htmlFile << "        <h1>Taco Bell Payment</h1>" << endl;
+        htmlFile << "        <p class=\"subtitle\">Scan the QR code to complete your payment</p>" << endl;
+        htmlFile << "        <div id=\"qrcode\"></div>" << endl;
+        htmlFile << "        <div class=\"amount\">₹" << (int)totalBill << "/-</div>" << endl;
+        htmlFile << "        <div class=\"upi-id\">UPI ID: 9625065557@upi</div>" << endl;
+        htmlFile << "        <p class=\"instructions\">Scan this QR code with any UPI app (Google Pay, PhonePe, Paytm, etc.)</p>" << endl;
+        htmlFile << "    </div>" << endl;
+        htmlFile << "    <script>" << endl;
+        htmlFile << "        new QRCode(document.getElementById('qrcode'), {" << endl;
+        htmlFile << "            text: \"" << upiLink << "\"," << endl;
+        htmlFile << "            width: 256," << endl;
+        htmlFile << "            height: 256," << endl;
+        htmlFile << "            colorDark: '#000000'," << endl;
+        htmlFile << "            colorLight: '#ffffff'," << endl;
+        htmlFile << "            correctLevel: QRCode.CorrectLevel.H" << endl;
+        htmlFile << "        });" << endl;
+        htmlFile << "    </script>" << endl;
+        htmlFile << "</body>" << endl;
+        htmlFile << "</html>" << endl;
+        htmlFile.close();
+        
+        // Open HTML file in browser
+        system("start qr_payment.html");
+        
         cout << "Please scan the QR code to complete payment." << endl;
         cout << "Amount to pay: " << totalBill << "/-" << endl;
+        cout << "UPI ID: 9625065557@upi" << endl;
+        cout << "QR Code page opened in your browser (qr_payment.html)" << endl;
+        
         file << "Payment Method: UPI" << endl;
+        file << "UPI ID: 9625065557@upi" << endl;
         file << "Amount Paid: " << totalBill << endl;
     }
-    
-    
+
     else if (pm1 == 2)
     {
         cout << "please pay on the counter." << endl;
@@ -263,7 +425,7 @@ int main()
         cout << "invalid input" << endl;
         file << "Payment: invalid" << endl;
     }
-    
+
     cout << "thank you for choosing Taco Bell!" << endl;
 
     file.close();

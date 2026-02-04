@@ -1,83 +1,10 @@
 Customer Name: 
-Customer Name: 
-Customer Name: 
-Customer Name: 
-Customer Name: 
-Customer Name: 
-Customer Name: 
-Customer Name: 
-Shake: no
-Customer Name: 
-Juice: mango peach
+Juice: Pineapple lime
 Main course (y/n): y
-Taco: cheesy lava taco
-Customer Name: 
-Customer Name: 
-Shake: sweet vanilla
-Main course (y/n): y
-Wrap: hot bean
-Shake Price: 159
-Wrap Price: 159
-Total Bill: 318
-Payment Method: UPI
-Amount Paid: 318
-Customer Name: 
-Customer Name: 
-Shake: sweet vanilla
-Main course (y/n): y
-Taco: naked taco
-Shake Price: 159
-Taco Price: 179
-Total Bill: 338
-Payment Method: Cash
-Amount to Pay: 338
-Customer Name: 
-Shake: wild strawberry
-Main course (y/n): y
-Taco: naked taco
-Shake Price: 159
+Taco: 2
+Juice Price: 159
 Taco Price: 179
 Total Bill: 338
 Payment Method: UPI
+UPI ID: 9625065557@upi
 Amount Paid: 338
-Customer Name: 
-Juice: mango peach
-Main course (y/n): y
-Wrap: hot bean
-Juice Price: 199
-Wrap Price: 159
-Total Bill: 358
-Payment Method: UPI
-Amount Paid: 358
-Customer Name: 
-Customer Name: 
-Shake: sweet vanilla
-Main course (y/n): y
-Wrap: hot bean
-Shake Price: 159
-Wrap Price: 159
-Total Bill: 318
-Payment Method: UPI
-Amount Paid: 318
-Customer Name: 
-Shake: mexican chocolate
-Main course (y/n): y
-Wrap: spicy paneer
-Shake Price: 159
-Wrap Price: 159
-Total Bill: 318
-Payment Method: UPI
-Amount Paid: 318
-Customer Name: 
-Customer Name: 
-Customer Name: 
-Juice: lemon
-Customer Name: 
-Juice: lime
-Customer Name: 
-Juice: mango
-Customer Name: 
-Juice: lime
-Customer Name: 
-Customer Name: 
-Juice: 1
