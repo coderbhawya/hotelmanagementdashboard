@@ -93,3 +93,16 @@ Amount to Pay: 188
 Status: Pending
 ===========================================
 
+===========================================
+Order ID: TB-7576
+Timestamp: 2026-08-31 11:47:46
+Customer Name: bhawya
+Main Course: Spicy paneer (Wrap)
+Main Course Price: 199
+Item: Spicy paneer (Wrap) x2 - Rs.199
+Total Bill: 376
+Payment Method: Cash
+Amount to Pay: 376
+Status: Pending
+===========================================
+

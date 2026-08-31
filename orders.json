@@ -79,7 +79,7 @@
     ],
     "totalBill": 398,
     "paymentMethod": "UPI",
-    "status": "Pending",
+    "status": "Served",
     "source": "POS Kiosk",
     "timestamp": "2026-08-30 22:38:22"
   },
@@ -163,7 +163,7 @@
     ],
     "totalBill": 288,
     "paymentMethod": "UPI",
-    "status": "Ready",
+    "status": "Pending",
     "source": "POS Kiosk",
     "timestamp": "2026-08-30 22:19:45"
   },
@@ -189,5 +189,28 @@
     "status": "Pending",
     "source": "Web Kiosk",
     "timestamp": "2026-08-30 17:42:05"
+  },
+  {
+    "id": "TB-7576",
+    "customer": "bhawya",
+    "tableNo": "Suite-101",
+    "drink": "None",
+    "drinkPrice": 0,
+    "mainCourse": "Spicy paneer (Wrap)",
+    "mainCoursePrice": 199,
+    "items": [
+      {
+        "id": "w1",
+        "name": "Spicy paneer",
+        "category": "Wrap",
+        "price": 199,
+        "qty": 2
+      }
+    ],
+    "totalBill": 376,
+    "paymentMethod": "Cash",
+    "status": "Pending",
+    "source": "Web Kiosk",
+    "timestamp": "2026-08-31 11:47:46"
   }
 ]
