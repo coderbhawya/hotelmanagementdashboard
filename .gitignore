@@ -36,5 +36,8 @@ ehthumbs.db
 *.tmp
 *.bak
 
-# Any additional output files (optional to include)
-*.out
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

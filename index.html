@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taco Bell Gourmet & Hotel Suite | Luxury Kitchen KDS & POS</title>
+    <meta name="description" content="Ultra-premium Real-Time Hotel Food Management Dashboard, Kitchen Display System (KDS), and Ordering POS Kiosk with GSAP animations & C++ Backend sync.">
+    <!-- Favicon & Touch Icons -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#090d16">
+
+    <!-- Google Fonts: Outfit, Plus Jakarta Sans, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- GSAP 3 (GreenSock Animation Platform) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+    
+    <!-- Canvas Confetti & QRCode.js -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ambient Dynamic Glowing Mesh Background -->
+    <div class="ambient-mesh">
+        <div class="mesh-orb mesh-1"></div>
+        <div class="mesh-orb mesh-2"></div>
+        <div class="mesh-orb mesh-3"></div>
+        <div class="mesh-orb mesh-4"></div>
+    </div>
+    <div class="mesh-noise-overlay"></div>
+
+    <!-- Main App Container -->
+    <div class="app-layout" id="app">
+        
+        <!-- ================= TOP LUXURY NAVIGATION ================= -->
+        <header class="top-nav" id="top-nav">
+            <div class="nav-brand">
+                <div class="brand-icon-box">
+                    <div class="brand-glow-ring"></div>
+                    <i class="fa-solid fa-bell-concierge brand-icon"></i>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">
+                        <span>TACO BELL</span>
+                        <span class="brand-pill">GOURMET</span>
+                    </div>
+                    <div class="brand-subtitle">
+                        <span class="pulse-dot-live"></span>
+                        <span class="sub-text">Hotel Suite & Kitchen Display System</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central View Navigation Tabs -->
+            <nav class="nav-tabs-wrapper" role="tablist" id="nav-tabs-wrapper">
+                <div class="nav-sliding-pill" id="nav-sliding-pill"></div>
+                <button class="nav-tab active" data-view="kds" id="tab-kds" role="tab" aria-selected="true">
+                    <i class="fa-solid fa-fire-burner tab-icon"></i>
+                    <span class="tab-label">Kitchen KDS</span>
+                    <span class="tab-badge" id="kds-pending-badge">0</span>
+                </button>
+                <button class="nav-tab" data-view="kiosk" id="tab-kiosk" role="tab" aria-selected="false">
+                    <i class="fa-solid fa-utensils tab-icon"></i>
+                    <span class="tab-label">Food Kiosk & POS</span>
+                </button>
+                <button class="nav-tab" data-view="analytics" id="tab-analytics" role="tab" aria-selected="false">
+                    <i class="fa-solid fa-chart-pie tab-icon"></i>
+                    <span class="tab-label">Analytics & Sales</span>
+                </button>
+            </nav>
+
+            <!-- Nav Controls (Theme Toggle, Live Clock, Sound, Cart) -->
+            <div class="nav-controls">
+                <div class="clock-pill">
+                    <span class="live-dot-green"></span>
+                    <span id="live-clock">00:00:00 PM</span>
+                </div>
+
+                <!-- Theme Toggle (Dark / Light) -->
+                <button class="control-btn" id="btn-theme-toggle" title="Toggle Dark / Light Luxury Theme" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon theme-icon" id="theme-icon"></i>
+                </button>
+
+                <!-- Audio Toggle -->
+                <button class="control-btn" id="btn-sound-toggle" title="Toggle Kitchen Audio Alerts" aria-label="Toggle Sound">
+                    <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+                    <span class="sound-wave-bars">
+                        <span></span><span></span><span></span>
+                    </span>
+                </button>
+
+                <!-- Cart Button -->
+                <button class="cart-trigger-btn" id="btn-open-cart" title="View Order Basket">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-badge-count" id="cart-badge-count">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ================= MAIN CONTENT WRAPPER ================= -->
+        <main class="main-content" id="main-content">
+            
+            <!-- ================= VIEW 1: KITCHEN DISPLAY SYSTEM (KDS) ================= -->
+            <section class="view-panel active" id="view-kds">
+                
+                <!-- KDS Top Summary Metrics Ribbon -->
+                <div class="kds-ribbon" id="kds-ribbon">
+                    
+                    <!-- Metric 1: Today's Revenue -->
+                    <div class="metric-card metric-gold" id="card-stat-revenue">
+                        <div class="metric-glass-shine"></div>
+                        <div class="metric-header">
+                            <div class="metric-icon-wrap gold">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                            <div class="metric-tag tag-gold">
+                                <span class="tag-dot"></span> LIVE
+                            </div>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-label">Today's Revenue</span>
+                            <div class="metric-value-row">
+                                <h2 class="metric-val" id="stat-kds-revenue">₹0</h2>
+                            </div>
+                        </div>
+                        <div class="metric-spark-bar">
+                            <div class="spark-fill spark-gold" style="width: 82%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2: Total Orders -->
+                    <div class="metric-card metric-indigo" id="card-stat-total">
+                        <div class="metric-glass-shine"></div>
+                        <div class="metric-header">
+                            <div class="metric-icon-wrap indigo">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+                            <div class="metric-tag tag-indigo">
+                                <i class="fa-solid fa-arrows-rotate fa-spin-pulse"></i> SYNCED
+                            </div>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-label">Total Orders</span>
+                            <div class="metric-value-row">
+                                <h2 class="metric-val" id="stat-kds-total">0</h2>
+                            </div>
+                        </div>
+                        <div class="metric-spark-bar">
+                            <div class="spark-fill spark-indigo" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3: Pending Kitchen -->
+                    <div class="metric-card metric-amber" id="card-stat-pending">
+                        <div class="metric-glass-shine"></div>
+                        <div class="metric-header">
+                            <div class="metric-icon-wrap amber">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                            <div class="metric-tag tag-amber">QUEUE</div>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-label">Pending Kitchen</span>
+                            <div class="metric-value-row">
+                                <h2 class="metric-val text-pending" id="stat-kds-pending">0</h2>
+                            </div>
+                        </div>
+                        <div class="metric-spark-bar">
+                            <div class="spark-fill spark-amber" style="width: 65%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 4: In Preparation -->
+                    <div class="metric-card metric-cyan" id="card-stat-preparing">
+                        <div class="metric-glass-shine"></div>
+                        <div class="metric-header">
+                            <div class="metric-icon-wrap cyan">
+                                <i class="fa-solid fa-fire-flame-curved"></i>
+                            </div>
+                            <div class="metric-tag tag-cyan">COOKING</div>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-label">In Preparation</span>
+                            <div class="metric-value-row">
+                                <h2 class="metric-val text-prep" id="stat-kds-preparing">0</h2>
+                            </div>
+                        </div>
+                        <div class="metric-spark-bar">
+                            <div class="spark-fill spark-cyan" style="width: 45%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 5: Ready for Pickup -->
+                    <div class="metric-card metric-emerald" id="card-stat-ready">
+                        <div class="metric-glass-shine"></div>
+                        <div class="metric-header">
+                            <div class="metric-icon-wrap emerald">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div class="metric-tag tag-emerald">DONE</div>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-label">Ready for Pickup</span>
+                            <div class="metric-value-row">
+                                <h2 class="metric-val text-ready" id="stat-kds-ready">0</h2>
+                            </div>
+                        </div>
+                        <div class="metric-spark-bar">
+                            <div class="spark-fill spark-emerald" style="width: 50%;"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- KDS Action Toolbar & Live Search -->
+                <div class="kds-toolbar" id="kds-toolbar">
+                    <div class="filter-pills" id="kds-filters">
+                        <button class="filter-pill active" data-filter="all">
+                            <span class="pill-title">All</span>
+                            <span class="pill-count" id="filter-count-all">0</span>
+                        </button>
+                        <button class="filter-pill pill-pending" data-filter="Pending">
+                            <span class="pill-dot dot-pending"></span>
+                            <span class="pill-title">Pending</span>
+                            <span class="pill-count" id="filter-count-pending">0</span>
+                        </button>
+                        <button class="filter-pill pill-prep" data-filter="Preparing">
+                            <span class="pill-dot dot-prep"></span>
+                            <span class="pill-title">Preparing</span>
+                            <span class="pill-count" id="filter-count-prep">0</span>
+                        </button>
+                        <button class="filter-pill pill-ready" data-filter="Ready">
+                            <span class="pill-dot dot-ready"></span>
+                            <span class="pill-title">Ready</span>
+                            <span class="pill-count" id="filter-count-ready">0</span>
+                        </button>
+                        <button class="filter-pill pill-served" data-filter="Served">
+                            <span class="pill-dot dot-served"></span>
+                            <span class="pill-title">Served</span>
+                            <span class="pill-count" id="filter-count-served">0</span>
+                        </button>
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <div class="search-input-wrap">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="kds-search-input" placeholder="Search Order ID, Guest, Dish, Table...">
+                            <button class="search-clear-btn hidden" id="btn-search-clear"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <button class="action-btn btn-glass" id="btn-refresh-orders" title="Synchronize kitchen orders">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KDS Order Cards Dynamic Grid -->
+                <div class="orders-grid" id="orders-grid">
+                    <!-- Dynamic Live Tickets Rendered by app.js & GSAP -->
+                </div>
+
+                <!-- Empty State (Queue Clear) -->
+                <div class="empty-state hidden" id="kds-empty-state">
+                    <div class="empty-icon-box">
+                        <div class="empty-halo"></div>
+                        <i class="fa-solid fa-champagne-glasses empty-icon"></i>
+                    </div>
+                    <h3 class="empty-title">All Kitchen Tickets Cleared!</h3>
+                    <p class="empty-desc">There are no orders in this queue filter. Orders received from the C++ console or web kiosk will flash here with live sound alerts.</p>
+                    <button class="action-btn btn-primary" id="btn-empty-order-now">
+                        <i class="fa-solid fa-plus"></i> Place New Order
+                    </button>
+                </div>
+
+            </section>
+
+
+            <!-- ================= VIEW 2: FOOD ORDERING KIOSK & POS ================= -->
+            <section class="view-panel" id="view-kiosk">
+                <div class="kiosk-layout">
+                    
+                    <!-- Left: Menu Catalog -->
+                    <div class="kiosk-catalog">
+                        
+                        <!-- Luxury Hero Showcase Banner -->
+                        <div class="kiosk-hero">
+                            <div class="hero-backdrop-glow"></div>
+                            <div class="hero-content">
+                                <div class="hero-top-pill">
+                                    <i class="fa-solid fa-crown text-warning"></i>
+                                    <span>Chef's Signature Luxury Selection</span>
+                                </div>
+                                <h1 class="hero-title">Experience Artisanal Gourmet Mexican & Craft Drinks</h1>
+                                <p class="hero-desc">Indulge in freshly flame-toasted tortillas, molten queso sauces, cold-pressed tropical nectars, and rich Belgian chocolate shakes.</p>
+                                
+                                <div class="hero-perks">
+                                    <div class="hero-perk-item">
+                                        <i class="fa-solid fa-stopwatch text-accent"></i>
+                                        <span>10-15 Min Kitchen Prep</span>
+                                    </div>
+                                    <div class="hero-perk-item">
+                                        <i class="fa-solid fa-qrcode text-success"></i>
+                                        <span>Instant UPI QR Gateway</span>
+                                    </div>
+                                    <div class="hero-perk-item coupon-perk" id="hero-coupon-copy" title="Click to copy coupon code">
+                                        <i class="fa-solid fa-tag text-gold"></i>
+                                        <span>Use Code <strong class="copy-code">TACO10</strong> (10% Off)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hero-visual-card">
+                                <div class="hero-img-showcase">
+                                    <img src="assets/tacos.jpg" alt="Signature Tacos" class="hero-show-img img-primary">
+                                    <img src="assets/shakes.jpg" alt="Luxury Shakes" class="hero-show-img img-secondary">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Menu Category Filter Tabs -->
+                        <div class="menu-categories-bar" id="menu-category-tabs">
+                            <button class="cat-pill active" data-cat="all">
+                                <i class="fa-solid fa-border-all"></i>
+                                <span>All Gourmet Items</span>
+                            </button>
+                            <button class="cat-pill" data-cat="juices">
+                                <i class="fa-solid fa-glass-water"></i>
+                                <span>Cold Pressed Juices</span>
+                            </button>
+                            <button class="cat-pill" data-cat="shakes">
+                                <i class="fa-solid fa-martini-glass-citrus"></i>
+                                <span>Luxury Shakes</span>
+                            </button>
+                            <button class="cat-pill" data-cat="wraps">
+                                <i class="fa-solid fa-scroll"></i>
+                                <span>Artisanal Wraps</span>
+                            </button>
+                            <button class="cat-pill" data-cat="tacos">
+                                <i class="fa-solid fa-utensils"></i>
+                                <span>Signature Tacos</span>
+                            </button>
+                        </div>
+
+                        <!-- Menu Cards Grid -->
+                        <div class="menu-grid" id="menu-grid">
+                            <!-- Populated dynamically by app.js & GSAP -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Sticky Glass POS Cart Sidebar -->
+                    <aside class="kiosk-cart-sidebar" id="cart-sidebar">
+                        <div class="cart-glass-wrap">
+                            <div class="cart-header">
+                                <div class="cart-title-wrap">
+                                    <div class="cart-icon-halo">
+                                        <i class="fa-solid fa-bag-shopping"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="cart-title">Order Summary</h3>
+                                        <span class="cart-subtitle">Dine-in, Room Service & POS</span>
+                                    </div>
+                                </div>
+                                <button class="cart-clear-btn" id="btn-clear-cart" title="Clear all basket items">
+                                    <i class="fa-solid fa-trash-can"></i> Clear
+                                </button>
+                            </div>
+
+                            <!-- Customer & Table Selection -->
+                            <div class="cart-customer-card">
+                                <div class="form-group">
+                                    <label class="form-label" for="cart-customer-name">
+                                        <i class="fa-solid fa-user"></i> Guest Name
+                                    </label>
+                                    <input type="text" id="cart-customer-name" class="form-input" placeholder="Enter guest name..." value="">
+                                </div>
+
+                                <div class="form-grid-2">
+                                    <div class="form-group">
+                                        <label class="form-label" for="cart-table-no">
+                                            <i class="fa-solid fa-chair"></i> Suite / Table
+                                        </label>
+                                        <input type="text" id="cart-table-no" class="form-input" placeholder="e.g. Table-12 / Suite-101" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="cart-order-type">
+                                            <i class="fa-solid fa-bell-concierge"></i> Service
+                                        </label>
+                                        <select id="cart-order-type" class="form-select">
+                                            <option value="Dine-in">Dine-In</option>
+                                            <option value="Room-Service">Room Service</option>
+                                            <option value="Takeaway">Takeaway</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Items List -->
+                            <div class="cart-items-box" id="cart-items-list">
+                                <!-- Populated dynamically -->
+                            </div>
+
+                            <!-- Coupon & Billing Box -->
+                            <div class="cart-checkout-footer">
+                                
+                                <!-- Promo Code Input -->
+                                <div class="coupon-input-group">
+                                    <div class="coupon-field-wrap">
+                                        <i class="fa-solid fa-ticket coupon-icon"></i>
+                                        <input type="text" id="coupon-input" placeholder="Promo code (e.g. TACO10)" uppercase>
+                                    </div>
+                                    <button class="action-btn btn-accent btn-sm" id="btn-apply-coupon">Apply</button>
+                                </div>
+                                <div class="coupon-status" id="coupon-status-msg"></div>
+
+                                <!-- Bill Calculation Breakdown -->
+                                <div class="bill-ledger">
+                                    <div class="ledger-row">
+                                        <span class="ledger-label">Item Subtotal</span>
+                                        <span class="ledger-val" id="bill-subtotal">₹0</span>
+                                    </div>
+                                    <div class="ledger-row discount-row" id="discount-row" style="display: none;">
+                                        <span class="ledger-label text-success">
+                                            <i class="fa-solid fa-badge-percent"></i> Promo Discount
+                                        </span>
+                                        <span class="ledger-val text-success" id="bill-discount">-₹0</span>
+                                    </div>
+                                    <div class="ledger-row">
+                                        <span class="ledger-label">GST / Hotel Service (5%)</span>
+                                        <span class="ledger-val" id="bill-tax">₹0</span>
+                                    </div>
+                                    <div class="ledger-divider"></div>
+                                    <div class="ledger-row grand-total-row">
+                                        <span class="grand-label">Grand Total</span>
+                                        <span class="grand-val" id="bill-grand-total">₹0</span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Selector -->
+                                <div class="payment-pills">
+                                    <label class="pay-pill-label">
+                                        <input type="radio" name="payment-method" value="UPI" checked>
+                                        <div class="pay-pill-card">
+                                            <i class="fa-solid fa-qrcode"></i>
+                                            <span>Instant UPI QR</span>
+                                        </div>
+                                    </label>
+                                    <label class="pay-pill-label">
+                                        <input type="radio" name="payment-method" value="Cash">
+                                        <div class="pay-pill-card">
+                                            <i class="fa-solid fa-money-bill-wave"></i>
+                                            <span>Cash / Desk</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Submit CTA Button -->
+                                <button class="action-btn btn-primary btn-block btn-lg" id="btn-place-order" disabled>
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>Place Order & Pay (₹0)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+
+            <!-- ================= VIEW 3: REVENUE & SALES ANALYTICS ================= -->
+            <section class="view-panel" id="view-analytics">
+                <div class="analytics-container">
+                    
+                    <div class="analytics-header-box">
+                        <div>
+                            <div class="analytics-badge">
+                                <i class="fa-solid fa-bolt-lightning text-accent"></i> LIVE TELEMETRY
+                            </div>
+                            <h2 class="analytics-title">Real-Time Revenue & Sales Intelligence</h2>
+                            <p class="analytics-sub">Telemetry synchronized with zero-latency across C++ console orders and web POS transactions.</p>
+                        </div>
+                        <div class="analytics-top-actions">
+                            <button class="action-btn btn-glass btn-sm" id="btn-reset-demo-orders" title="Reset sample telemetry data">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Demo
+                            </button>
+                            <button class="action-btn btn-primary btn-sm" id="btn-export-orders-json" title="Download entire orders JSON file">
+                                <i class="fa-solid fa-download"></i> Export JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3 Master KPI Cards -->
+                    <div class="analytics-kpi-grid">
+                        
+                        <div class="kpi-card kpi-gold" id="kpi-1">
+                            <div class="kpi-top-line">
+                                <span class="kpi-tag">GROSS REVENUE</span>
+                                <div class="kpi-icon-pill gold"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            </div>
+                            <h3 class="kpi-num" id="kpi-val-revenue">₹0</h3>
+                            <div class="kpi-footer text-success">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                <span>100% Verified Real-time</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card kpi-blue" id="kpi-2">
+                            <div class="kpi-top-line">
+                                <span class="kpi-tag">TOTAL PROCESSED ORDERS</span>
+                                <div class="kpi-icon-pill blue"><i class="fa-solid fa-bag-shopping"></i></div>
+                            </div>
+                            <h3 class="kpi-num" id="kpi-val-orders">0</h3>
+                            <div class="kpi-footer text-info">
+                                <i class="fa-solid fa-arrows-rotate fa-spin-pulse"></i>
+                                <span>C++ Terminal + POS Kiosk</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card kpi-purple" id="kpi-3">
+                            <div class="kpi-top-line">
+                                <span class="kpi-tag">AVERAGE ORDER VALUE</span>
+                                <div class="kpi-icon-pill purple"><i class="fa-solid fa-chart-pie"></i></div>
+                            </div>
+                            <h3 class="kpi-num" id="kpi-val-aov">₹0</h3>
+                            <div class="kpi-footer text-purple">
+                                <i class="fa-solid fa-star text-gold"></i>
+                                <span>High Guest Satisfaction</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Visual Analytics Grid -->
+                    <div class="analytics-charts-grid">
+                        
+                        <!-- Category Sales Distribution -->
+                        <div class="chart-glass-panel">
+                            <div class="chart-panel-header">
+                                <div class="panel-title-wrap">
+                                    <i class="fa-solid fa-chart-simple text-accent"></i>
+                                    <h3>Category Sales Distribution</h3>
+                                </div>
+                                <span class="panel-badge">Live Share</span>
+                            </div>
+                            <div class="category-bars-list" id="category-bars-list">
+                                <!-- Rendered dynamically by GSAP -->
+                            </div>
+                        </div>
+
+                        <!-- Top Selling Dishes Leaderboard -->
+                        <div class="chart-glass-panel">
+                            <div class="chart-panel-header">
+                                <div class="panel-title-wrap">
+                                    <i class="fa-solid fa-trophy text-gold"></i>
+                                    <h3>Top Selling Dishes & Drinks</h3>
+                                </div>
+                                <span class="panel-badge">Best Sellers</span>
+                            </div>
+                            <div class="top-dishes-list" id="top-dishes-list">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ================= MODAL: DYNAMIC UPI QR SCANNER ================= -->
+    <div class="modal-backdrop" id="modal-upi">
+        <div class="modal-window modal-upi-window" id="modal-upi-card">
+            <button class="modal-close-btn" id="btn-close-upi-modal" aria-label="Close Modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="modal-security-badge">
+                <i class="fa-solid fa-shield-halved"></i> SECURE UPI 2.0 GATEWAY
+            </div>
+            
+            <h2 class="modal-heading">Scan & Pay via UPI</h2>
+            <p class="modal-subheading">Compatible with Google Pay, PhonePe, Paytm, BHIM, Cred, and all bank apps.</p>
+
+            <div class="qr-scanner-frame">
+                <div class="qr-code-box" id="modal-qrcode-target">
+                    <!-- QR rendered dynamically by QRCode.js -->
+                </div>
+                <div class="qr-target-corner corner-tl"></div>
+                <div class="qr-target-corner corner-tr"></div>
+                <div class="qr-target-corner corner-bl"></div>
+                <div class="qr-target-corner corner-br"></div>
+                <div class="qr-laser-scanner"></div>
+            </div>
+
+            <div class="modal-amount-banner" id="modal-upi-amount">₹0</div>
+            
+            <div class="modal-vpa-pill">
+                <span class="vpa-lbl">VPA:</span>
+                <span class="vpa-val">9625065557@upi</span>
+                <button class="btn-copy-vpa" id="btn-copy-vpa" title="Copy UPI VPA to clipboard">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+
+            <div class="modal-timer-pill">
+                <div class="pulsing-radar-dot"></div>
+                <span>Awaiting Bank Confirmation (<span id="modal-upi-countdown">04:59</span>)</span>
+            </div>
+
+            <div class="modal-actions-bar">
+                <button class="action-btn btn-success btn-block btn-lg" id="btn-simulate-pay-success">
+                    <i class="fa-solid fa-circle-check"></i> Simulate Payment Success
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: LUXURY THERMAL RECEIPT ================= -->
+    <div class="modal-backdrop" id="modal-receipt">
+        <div class="modal-window modal-receipt-window" id="modal-receipt-card">
+            <button class="modal-close-btn" id="btn-close-receipt-modal" aria-label="Close Modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="thermal-receipt-paper" id="receipt-paper-content">
+                <!-- Dynamically generated invoice layout -->
+            </div>
+
+            <div class="receipt-modal-actions">
+                <button class="action-btn btn-glass" id="btn-print-receipt">
+                    <i class="fa-solid fa-print"></i> Print Invoice
+                </button>
+                <button class="action-btn btn-primary" id="btn-done-receipt">
+                    <i class="fa-solid fa-check"></i> Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Queue -->
+    <div class="toast-stack" id="toast-container"></div>
+
+    <!-- Main GSAP Application Controller -->
+    <script src="app.js"></script>
+</body>
+</html>

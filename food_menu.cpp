@@ -3,6 +3,10 @@
 #include <string>
 #include <cctype>
 #include <cstdlib>
+#include <vector>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -14,66 +18,205 @@ string toLower(string str)
     return str;
 }
 
+
+string escapeJsonString(const string &input)
+{
+    string output = "";
+    for (char c : input)
+    {
+        if (c == '"') output += "\\\"";
+        else if (c == '\\') output += "\\\\";
+        else if (c == '\b') output += "\\b";
+        else if (c == '\f') output += "\\f";
+        else if (c == '\n') output += "\\n";
+        else if (c == '\r') output += "\\r";
+        else if (c == '\t') output += "\\t";
+        else output += c;
+    }
+    return output;
+}
+
+// Helper function to get current formatted timestamp (Cross-platform safe)
+string getCurrentTimestamp()
+{
+    time_t now = time(0);
+    tm ltm;
+#if defined(_MSC_VER)
+    localtime_s(&ltm, &now);
+#else
+    tm *temp = localtime(&now);
+    if (temp) ltm = *temp;
+    else ltm = {};  
+#endif
+    stringstream ss;
+    ss << setfill('0') 
+       << (1900 + ltm.tm_year) << "-" 
+       << setw(2) << (1 + ltm.tm_mon) << "-" 
+       << setw(2) << ltm.tm_mday << " " 
+       << setw(2) << ltm.tm_hour << ":" 
+       << setw(2) << ltm.tm_min << ":" 
+       << setw(2) << ltm.tm_sec;
+    return ss.str();
+}
+
+// Helper function to append order to orders.json for real-time dashboard integration
+void appendOrderToJson(const string &orderId, const string &customer, 
+                       const string &drink, double drinkPrice, const string &drinkCategory,
+                       const string &mainCourse, double mainCoursePrice, const string &mainCourseCategory,
+                       double total, const string &paymentMethod, const string &timestamp)
+{
+    ifstream inFile("orders.json");
+    string existingContent = "";
+    if (inFile.is_open())
+    {
+        stringstream buffer;
+        buffer << inFile.rdbuf();
+        existingContent = buffer.str();
+        inFile.close();
+    }
+
+    size_t first = existingContent.find_first_not_of(" \t\n\r");
+    size_t last = existingContent.find_last_not_of(" \t\n\r");
+    if (first == string::npos)
+    {
+        existingContent = "[]";
+    }
+    else
+    {
+        existingContent = existingContent.substr(first, (last - first + 1));
+        if (existingContent.length() < 2 || existingContent.front() != '[' || existingContent.back() != ']')
+        {
+            existingContent = "[]";
+        }
+    }
+
+    // Build JSON items array
+    stringstream itemsStream;
+    itemsStream << "[\n";
+    bool hasPreviousItem = false;
+    if (drinkPrice > 0)
+    {
+        itemsStream << "      { \"name\": \"" << escapeJsonString(drink) << "\", \"category\": \"" 
+                    << escapeJsonString(drinkCategory) << "\", \"price\": " << drinkPrice << ", \"qty\": 1 }";
+        hasPreviousItem = true;
+    }
+    if (mainCoursePrice > 0)
+    {
+        if (hasPreviousItem) itemsStream << ",\n";
+        itemsStream << "      { \"name\": \"" << escapeJsonString(mainCourse) << "\", \"category\": \"" 
+                    << escapeJsonString(mainCourseCategory) << "\", \"price\": " << mainCoursePrice << ", \"qty\": 1 }";
+    }
+    itemsStream << "\n    ]";
+
+    stringstream ss;
+    ss << "  {\n"
+       << "    \"id\": \"" << escapeJsonString(orderId) << "\",\n"
+       << "    \"customer\": \"" << escapeJsonString(customer) << "\",\n"
+       << "    \"drink\": \"" << escapeJsonString(drink) << "\",\n"
+       << "    \"drinkPrice\": " << drinkPrice << ",\n"
+       << "    \"mainCourse\": \"" << escapeJsonString(mainCourse) << "\",\n"
+       << "    \"mainCoursePrice\": " << mainCoursePrice << ",\n"
+       << "    \"items\": " << itemsStream.str() << ",\n"
+       << "    \"totalBill\": " << total << ",\n"
+       << "    \"paymentMethod\": \"" << escapeJsonString(paymentMethod) << "\",\n"
+       << "    \"status\": \"Pending\",\n"
+       << "    \"source\": \"C++ Terminal\",\n"
+       << "    \"timestamp\": \"" << timestamp << "\",\n"
+       << "    \"tableNo\": \"Terminal-POS\"\n"
+       << "  }";
+
+    string newOrderJson = ss.str();
+    string finalJson = "";
+
+    if (existingContent == "[]")
+    {
+        finalJson = "[\n" + newOrderJson + "\n]";
+    }
+    else
+    {
+        size_t closeBracket = existingContent.find_last_of(']');
+        if (closeBracket != string::npos)
+        {
+            finalJson = existingContent.substr(0, closeBracket);
+            size_t lastComma = finalJson.find_last_not_of(" \t\n\r");
+            if (lastComma != string::npos && finalJson[lastComma] != '[')
+            {
+                finalJson = finalJson.substr(0, lastComma + 1) + ",\n" + newOrderJson + "\n]";
+            }
+            else
+            {
+                finalJson = finalJson + "\n" + newOrderJson + "\n]";
+            }
+        }
+        else
+        {
+            finalJson = "[\n" + newOrderJson + "\n]";
+        }
+    }
+
+    ofstream outFile("orders.json");
+    if (outFile.is_open())
+    {
+        outFile << finalJson;
+        outFile.close();
+    }
+}
+
 int main()
 {
-    cout << "\t\t\t FOOD MENU" << endl;
-    cout << "\t\t\t------------" << endl;
+    cout << "========================================================" << endl;
+    cout << "\t\t TACO BELL GOURMET MENU" << endl;
+    cout << "========================================================" << endl;
 
-    string user, js, sh, wr, tc;
+    string user = "Guest Customer", js = "None", sh = "None", wr = "None", tc = "None";
     int mc = 0, ch = 0, pm1 = 0;
     char pm = 'n';
-    char wraps, tacos, juices, shakes;
     double drinkPrice = 0, mainCoursePrice = 0, totalBill = 0;
-    ofstream file;
+    string selectedDrink = "None";
+    string selectedMainCourse = "None";
+    string drinkCategory = "None";
+    string mainCourseCategory = "None";
 
-    file.open("food_order.txt", ios::app);
-    if (!file)
-    {
-        cerr << "Unable to open food_order.txt for writing." << endl;
-        return 1;
-    }
-
-    cout << "enter your name: ";
-    // getline(cin, user);
-    file << "Customer Name: " << user << endl;
+    cout << "\nEnter your name (or press Enter for Guest): ";
+    getline(cin, user);
     if (user.empty())
     {
-        getline(cin, user);
+        user = "Guest Customer";
     }
 
-    cout << "\n";
-    cout << "Welcome to Taco Bell " << user << "!" << endl;
-    cout << "\t\t\t MENU " << endl;
-
-    cout << "what would you like to have?" << endl;
-    cout << "juices or shakes (press 1 for juices and 2 for shakes): ";
+    cout << "\nWelcome to Taco Bell Gourmet, " << user << "!" << endl;
+    cout << "--------------------------------------------------------" << endl;
+    cout << "What beverage would you like?" << endl;
+    cout << "Press 1 for Fresh Juices, 2 for Luxury Shakes, 0 to skip: ";
+    
     if (!(cin >> ch))
-        return 0;
+    {
+        ch = 0;
+        cin.clear();
+        string dummy;
+        getline(cin, dummy);
+    }
+
     if (ch == 1)
     {
-        cout << "JUICES MENU" << endl;
-        cout << "------------" << endl;
-
+        cout << "\n------------------ FRESH JUICES MENU ------------------" << endl;
         string juiceNames[] = {"Pineapple lime", "Cranberry crush", "Mango peach", "Dragonfruit berry"};
         int juicePrices[] = {159, 189, 179, 199};
         int juiceCount = 4;
 
         for (int i = 0; i < juiceCount; i++)
         {
-            cout << (i + 1) << ". " << juiceNames[i];
-            cout << ":" << juicePrices[i] << "/-" << endl;
+            cout << "  " << (i + 1) << ". " << juiceNames[i] << " \t- Rs." << juicePrices[i] << "/-" << endl;
         }
 
-        cout << "which juice would you like to have?: ";
+        cout << "Which juice would you like? (Enter 1-4 or name): ";
         cin >> ws;
         getline(cin, js);
 
-        // Convert to lowercase for case-insensitive matching
         string jsLower = toLower(js);
         bool juiceFound = false;
         int choice = -1;
 
-        // Try numeric match first
         try
         {
             choice = stoi(jsLower);
@@ -81,24 +224,23 @@ int main()
             {
                 drinkPrice = juicePrices[choice - 1];
                 juiceFound = true;
-                js = juiceNames[choice - 1]; // Update js to actual name
+                js = juiceNames[choice - 1];
             }
         }
         catch (...)
         {
-            // Not a number, try name matching
         }
 
-        // If not found, try name matching (case-insensitive)
         if (!juiceFound)
         {
             for (int i = 0; i < juiceCount; i++)
             {
-                if (jsLower.find(toLower(juiceNames[i])) != string::npos)
+                if (jsLower.find(toLower(juiceNames[i])) != string::npos || 
+                    toLower(juiceNames[i]).find(jsLower) != string::npos)
                 {
                     drinkPrice = juicePrices[i];
                     juiceFound = true;
-                    js = juiceNames[i]; // Update js to actual name
+                    js = juiceNames[i];
                     break;
                 }
             }
@@ -106,63 +248,61 @@ int main()
 
         if (!juiceFound)
         {
-            cout << "Invalid juice selection! Please enter a number (1-4) or juice name." << endl;
+            cout << ">> Invalid juice choice! Defaulting to no juice." << endl;
             drinkPrice = 0;
+            js = "None";
         }
-
-        file << "Juice: " << js << endl;
+        else
+        {
+            selectedDrink = js;
+            drinkCategory = "Juice";
+            cout << ">> Added: " << js << " (Rs." << drinkPrice << "/-)" << endl;
+        }
     }
-
     else if (ch == 2)
     {
-        cout << "SHAKES MENU" << endl;
-        cout << "-----------" << endl;
-
+        cout << "\n------------------ LUXURY SHAKES MENU -----------------" << endl;
         string shakeNames[] = {"Sweet vanilla", "Mexican chocolate", "Dulce de leche", "Wild strawberry"};
         int shakePrices[] = {149, 169, 199, 159};
         int shakeCount = 4;
 
         for (int i = 0; i < shakeCount; i++)
         {
-            cout << (i + 1) << ". " << shakeNames[i];
-            cout << ":" << shakePrices[i] << "/-" << endl;
+            cout << "  " << (i + 1) << ". " << shakeNames[i] << " \t- Rs." << shakePrices[i] << "/-" << endl;
         }
 
-        cout << "which shake would you like to have?: ";
+        cout << "Which shake would you like? (Enter 1-4 or name): ";
         cin >> ws;
-        getline(cin, js);
+        getline(cin, sh);
 
-        // Convert to lowercase for case-insensitive matching
-        string jsLower = toLower(js);
+        string shLower = toLower(sh);
         bool shakeFound = false;
         int choice = -1;
 
-        // Try numeric match first
         try
         {
-            choice = stoi(jsLower);
+            choice = stoi(shLower);
             if (choice >= 1 && choice <= shakeCount)
             {
                 drinkPrice = shakePrices[choice - 1];
                 shakeFound = true;
-                js = shakeNames[choice - 1]; // Update js to actual name
+                sh = shakeNames[choice - 1];
             }
         }
         catch (...)
         {
-            // Not a number, try name matching
         }
 
-        // If not found, try name matching (case-insensitive)
         if (!shakeFound)
         {
             for (int i = 0; i < shakeCount; i++)
             {
-                if (jsLower.find(toLower(shakeNames[i])) != string::npos)
+                if (shLower.find(toLower(shakeNames[i])) != string::npos ||
+                    toLower(shakeNames[i]).find(shLower) != string::npos)
                 {
                     drinkPrice = shakePrices[i];
                     shakeFound = true;
-                    js = shakeNames[i]; // Update js to actual name
+                    sh = shakeNames[i];
                     break;
                 }
             }
@@ -170,265 +310,316 @@ int main()
 
         if (!shakeFound)
         {
-            cout << "Invalid shake selection! Please enter a number (1-4) or shake name." << endl;
+            cout << ">> Invalid shake choice! Defaulting to no shake." << endl;
             drinkPrice = 0;
-        }
-
-        file << "Shake: " << js << endl;
-    }
-    else
-    {
-        cout << "Invalid selection for drinks." << endl;
-    }
-
-    cout << "would you like to continue your order with main course?\n";
-    cout << "press 'y' for yes and 'n' for no: ";
-    cin >> pm;
-    file << "Main course (y/n): " << pm << endl;
-
-    if (pm == 'y' || pm == 'Y')
-    {
-        cout << "please enter your choice <3 " << endl;
-        cout << "Wrap or Taco (press 1 for wraps and 2 for taco): ";
-        cin >> mc;
-
-        if (mc == 1)
-        {
-            cout << "WRAP" << endl;
-            cout << "-----" << endl;
-            int wraps = 0;
-            cout << "1. Spicy paneer";
-            wraps = 199;
-            cout << ":" << wraps << "/-" << endl;
-            cout << "2. Crispy chicken";
-            wraps = 249;
-            cout << ":" << wraps << "/-" << endl;
-            cout << "3. Crispy potato";
-            wraps = 179;
-            cout << ":" << wraps << "/-" << endl;
-            cout << "4. Hot bean";
-            wraps = 159;
-            cout << ":" << wraps << "/-" << endl;
-            cout << "which wrap would you like to have? ";
-            cin >> ws;
-            getline(cin, wr);
-            file << "Wrap: " << wr << endl;
-            mainCoursePrice = wraps;
-        }
-
-        else if (mc == 2)
-        {
-            cout << "TACO" << endl;
-            cout << "-----" << endl;
-            int tacos = 0;
-            cout << "1. Soft shell taco";
-            tacos = 129;
-            cout << ":" << tacos << "/-" << endl;
-            cout << "2. Crunchy taco";
-            tacos = 149;
-            cout << ":" << tacos << "/-" << endl;
-            cout << "3. Naked taco";
-            tacos = 159;
-            cout << ":" << tacos << "/-" << endl;
-            cout << "4. Cheesy lava taco";
-            tacos = 179;
-            cout << ":" << tacos << "/-" << endl;
-            cout << "w hich taco would you like to have? ";
-            cin >> ws;
-            getline(cin, tc);
-            file << "Taco: " << tc << endl;
-            mainCoursePrice = tacos;
+            sh = "None";
         }
         else
         {
-            cout << "invalid input for main course selection" << endl;
+            selectedDrink = sh;
+            drinkCategory = "Shake";
+            cout << ">> Added: " << sh << " (Rs." << drinkPrice << "/-)" << endl;
+        }
+    }
+    else
+    {
+        cout << ">> No beverage selected." << endl;
+    }
+
+    cout << "\nWould you like to add a Main Course item? (y/n): ";
+    cin >> pm;
+
+    if (pm == 'y' || pm == 'Y')
+    {
+        cout << "Select Main Course (Press 1 for Wraps, 2 for Tacos): ";
+        if (!(cin >> mc))
+        {
+            mc = 0;
+            cin.clear();
+            string dummy;
+            getline(cin, dummy);
+        }
+
+        if (mc == 1)
+        {
+            cout << "\n------------------ ARTISANAL WRAPS MENU ----------------" << endl;
+            string wrapNames[] = {"Spicy paneer", "Crispy chicken", "Crispy potato", "Hot bean"};
+            int wrapPrices[] = {199, 249, 179, 159};
+            int wrapCount = 4;
+
+            for (int i = 0; i < wrapCount; i++)
+            {
+                cout << "  " << (i + 1) << ". " << wrapNames[i] << " \t- Rs." << wrapPrices[i] << "/-" << endl;
+            }
+
+            cout << "Which wrap would you like? (Enter 1-4 or name): ";
+            cin >> ws;
+            getline(cin, wr);
+
+            string wrLower = toLower(wr);
+            bool wrapFound = false;
+            int choice = -1;
+
+            try
+            {
+                choice = stoi(wrLower);
+                if (choice >= 1 && choice <= wrapCount)
+                {
+                    mainCoursePrice = wrapPrices[choice - 1];
+                    wrapFound = true;
+                    wr = wrapNames[choice - 1];
+                }
+            }
+            catch (...)
+            {
+            }
+
+            if (!wrapFound)
+            {
+                for (int i = 0; i < wrapCount; i++)
+                {
+                    if (wrLower.find(toLower(wrapNames[i])) != string::npos ||
+                        toLower(wrapNames[i]).find(wrLower) != string::npos)
+                    {
+                        mainCoursePrice = wrapPrices[i];
+                        wrapFound = true;
+                        wr = wrapNames[i];
+                        break;
+                    }
+                }
+            }
+
+            if (wrapFound)
+            {
+                selectedMainCourse = wr;
+                mainCourseCategory = "Wrap";
+                cout << ">> Added: " << wr << " (Rs." << mainCoursePrice << "/-)" << endl;
+            }
+            else
+            {
+                cout << ">> Invalid wrap choice." << endl;
+                mainCoursePrice = 0;
+            }
+        }
+        else if (mc == 2)
+        {
+            cout << "\n------------------ SIGNATURE TACOS MENU ----------------" << endl;
+            string tacoNames[] = {"Soft shell taco", "Crunchy taco", "Naked taco", "Cheesy lava taco"};
+            int tacoPrices[] = {129, 149, 159, 179};
+            int tacoCount = 4;
+
+            for (int i = 0; i < tacoCount; i++)
+            {
+                cout << "  " << (i + 1) << ". " << tacoNames[i] << " \t- Rs." << tacoPrices[i] << "/-" << endl;
+            }
+
+            cout << "Which taco would you like? (Enter 1-4 or name): ";
+            cin >> ws;
+            getline(cin, tc);
+
+            string tcLower = toLower(tc);
+            bool tacoFound = false;
+            int choice = -1;
+
+            try
+            {
+                choice = stoi(tcLower);
+                if (choice >= 1 && choice <= tacoCount)
+                {
+                    mainCoursePrice = tacoPrices[choice - 1];
+                    tacoFound = true;
+                    tc = tacoNames[choice - 1];
+                }
+            }
+            catch (...)
+            {
+            }
+
+            if (!tacoFound)
+            {
+                for (int i = 0; i < tacoCount; i++)
+                {
+                    if (tcLower.find(toLower(tacoNames[i])) != string::npos ||
+                        toLower(tacoNames[i]).find(tcLower) != string::npos)
+                    {
+                        mainCoursePrice = tacoPrices[i];
+                        tacoFound = true;
+                        tc = tacoNames[i];
+                        break;
+                    }
+                }
+            }
+
+            if (tacoFound)
+            {
+                selectedMainCourse = tc;
+                mainCourseCategory = "Taco";
+                cout << ">> Added: " << tc << " (Rs." << mainCoursePrice << "/-)" << endl;
+            }
+            else
+            {
+                cout << ">> Invalid taco choice." << endl;
+                mainCoursePrice = 0;
+            }
+        }
+        else
+        {
+            cout << ">> Invalid main course option." << endl;
         }
     }
 
-    if (ch != 1 && ch != 2 && mc != 1 && mc != 2)
+    if (drinkPrice == 0 && mainCoursePrice == 0)
     {
-        cout << "No items were selected. Exiting order process." << endl;
-        file.close();
+        cout << "\n[!] No items were selected. Exiting order process." << endl;
         return 0;
     }
 
+    totalBill = drinkPrice + mainCoursePrice;
+
     // Display billing gateway
-    cout << "\n";
-    cout << "\t\t\t BILLING GATEWAY" << endl;
-    cout << "\t\t\t=================" << endl;
+    cout << "\n========================================================" << endl;
+    cout << "\t\t     ORDER SUMMARY" << endl;
+    cout << "========================================================" << endl;
+    cout << "Customer: " << user << endl;
 
-    // Add drink to bill
-    if (ch == 1)
+    if (drinkPrice > 0)
     {
-        cout << js << " (Juice)" << "\t\t" << drinkPrice << "/-" << endl;
-        file << "Juice Price: " << drinkPrice << endl;
-        totalBill += drinkPrice;
+        cout << "  * " << selectedDrink << " (" << drinkCategory << ")" << " \t Rs." << drinkPrice << "/-" << endl;
     }
-    else if (ch == 2)
+    if (mainCoursePrice > 0)
     {
-        cout << sh << " (Shake)" << "\t\t" << drinkPrice << "/-" << endl;
-        file << "Shake Price: " << drinkPrice << endl;
-        totalBill += drinkPrice;
+        cout << "  * " << selectedMainCourse << " (" << mainCourseCategory << ")" << " \t Rs." << mainCoursePrice << "/-" << endl;
     }
 
-    else if (ch != 1 && ch != 2)
+    cout << "--------------------------------------------------------" << endl;
+    cout << "  TOTAL BILL: Rs." << totalBill << "/-" << endl;
+    cout << "========================================================" << endl;
+
+    cout << "\nSelect Payment Method:" << endl;
+    cout << "1. Instant UPI QR Code" << endl;
+    cout << "2. Cash at Counter" << endl;
+    cout << "Enter choice (1 or 2): ";
+    if (!(cin >> pm1))
     {
-        cout << "No drinks were selected." << endl;
+        pm1 = 2;
     }
 
-    // Add main course to bill
-    if (mc == 1)
-    {
-        cout << wr << " (Wrap)" << "\t\t" << mainCoursePrice << "/-" << endl;
-        file << "Wrap Price: " << mainCoursePrice << endl;
-        totalBill += mainCoursePrice;
-    }
-    else if (mc == 2)
-    {
-        cout << tc << " (Taco)" << "\t\t" << mainCoursePrice << "/-" << endl;
-        file << "Taco Price: " << mainCoursePrice << endl;
-        totalBill += mainCoursePrice;
-    }
-    else if (mc != 1 && mc != 2)
-    {
-        cout << "No main course was selected." << endl;
-    }
-
-    cout << "-----------------------------" << endl;
-    cout << "TOTAL BILL: " << totalBill << "/-" << endl;
-    file << "Total Bill: " << totalBill << endl;
-    cout << "-----------------------------" << endl;
-
-    cout << "\n";
-    cout << "\t\t\t PAYMENT GATEWAY" << endl;
-    cout << "\t\t\t=================" << endl;
-    cout << "please select the payment method" << endl;
-    cout << "UPI/cash (press 1 for upi and 2 for cash): ";
-    cin >> pm1;
+    string paymentMethod = "Cash";
+    string timestamp = getCurrentTimestamp();
+    string orderId = "TB-" + to_string(time(0) % 100000);
 
     if (pm1 == 1)
     {
-        cout << "\nOpening UPI QR Code..." << endl;
+        paymentMethod = "UPI";
+        cout << "\nGenerating UPI Payment QR Code..." << endl;
         
-        // Create proper UPI link: upi://pay?pa=<UPI_ID>&pn=<NAME>&am=<AMOUNT>&cu=INR
         string upiLink = "upi://pay?pa=9625065557@upi&pn=TacoBell&am=" + 
                          to_string((int)totalBill) + "&cu=INR";
 
-        // Create HTML file with QR code generator
         ofstream htmlFile("qr_payment.html");
-        htmlFile << "<!DOCTYPE html>" << endl;
-        htmlFile << "<html lang=\"en\">" << endl;
-        htmlFile << "<head>" << endl;
-        htmlFile << "    <meta charset=\"UTF-8\">" << endl;
-        htmlFile << "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" << endl;
-        htmlFile << "    <title>Taco Bell - UPI Payment QR Code</title>" << endl;
-        htmlFile << "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js\"></script>" << endl;
-        htmlFile << "    <style>" << endl;
-        htmlFile << "        body {" << endl;
-        htmlFile << "            font-family: Arial, sans-serif;" << endl;
-        htmlFile << "            display: flex;" << endl;
-        htmlFile << "            justify-content: center;" << endl;
-        htmlFile << "            align-items: center;" << endl;
-        htmlFile << "            min-height: 100vh;" << endl;
-        htmlFile << "            margin: 0;" << endl;
-        htmlFile << "            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        .container {" << endl;
-        htmlFile << "            background: white;" << endl;
-        htmlFile << "            padding: 40px;" << endl;
-        htmlFile << "            border-radius: 15px;" << endl;
-        htmlFile << "            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);" << endl;
-        htmlFile << "            text-align: center;" << endl;
-        htmlFile << "            max-width: 500px;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        h1 {" << endl;
-        htmlFile << "            color: #333;" << endl;
-        htmlFile << "            margin-bottom: 10px;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        .subtitle {" << endl;
-        htmlFile << "            color: #666;" << endl;
-        htmlFile << "            margin-bottom: 30px;" << endl;
-        htmlFile << "            font-size: 16px;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        #qrcode {" << endl;
-        htmlFile << "            display: inline-block;" << endl;
-        htmlFile << "            margin: 20px 0;" << endl;
-        htmlFile << "            padding: 20px;" << endl;
-        htmlFile << "            background: #f5f5f5;" << endl;
-        htmlFile << "            border-radius: 10px;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        .amount {" << endl;
-        htmlFile << "            font-size: 24px;" << endl;
-        htmlFile << "            color: #667eea;" << endl;
-        htmlFile << "            font-weight: bold;" << endl;
-        htmlFile << "            margin: 20px 0;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        .upi-id {" << endl;
-        htmlFile << "            color: #666;" << endl;
-        htmlFile << "            margin: 10px 0;" << endl;
-        htmlFile << "            font-size: 14px;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "        .instructions {" << endl;
-        htmlFile << "            color: #999;" << endl;
-        htmlFile << "            margin-top: 20px;" << endl;
-        htmlFile << "            font-size: 12px;" << endl;
-        htmlFile << "        }" << endl;
-        htmlFile << "    </style>" << endl;
-        htmlFile << "</head>" << endl;
-        htmlFile << "<body>" << endl;
-        htmlFile << "    <div class=\"container\">" << endl;
-        htmlFile << "        <h1>Taco Bell Payment</h1>" << endl;
-        htmlFile << "        <p class=\"subtitle\">Scan the QR code to complete your payment</p>" << endl;
-        htmlFile << "        <div id=\"qrcode\"></div>" << endl;
-        htmlFile << "        <div class=\"amount\">₹" << (int)totalBill << "/-</div>" << endl;
-        htmlFile << "        <div class=\"upi-id\">UPI ID: 9625065557@upi</div>" << endl;
-        htmlFile << "        <p class=\"instructions\">Scan this QR code with any UPI app (Google Pay, PhonePe, Paytm, etc.)</p>" << endl;
-        htmlFile << "    </div>" << endl;
-        htmlFile << "    <script>" << endl;
-        htmlFile << "        new QRCode(document.getElementById('qrcode'), {" << endl;
-        htmlFile << "            text: \"" << upiLink << "\"," << endl;
-        htmlFile << "            width: 256," << endl;
-        htmlFile << "            height: 256," << endl;
-        htmlFile << "            colorDark: '#000000'," << endl;
-        htmlFile << "            colorLight: '#ffffff'," << endl;
-        htmlFile << "            correctLevel: QRCode.CorrectLevel.H" << endl;
-        htmlFile << "        });" << endl;
-        htmlFile << "    </script>" << endl;
-        htmlFile << "</body>" << endl;
-        htmlFile << "</html>" << endl;
-        htmlFile.close();
-        
-        // Open HTML file in browser
-        system("start qr_payment.html");
-        
-        cout << "Please scan the QR code to complete payment." << endl;
-        cout << "Amount to pay: " << totalBill << "/-" << endl;
-        cout << "UPI ID: 9625065557@upi" << endl;
-        cout << "QR Code page opened in your browser (qr_payment.html)" << endl;
-        
-        file << "Payment Method: UPI" << endl;
-        file << "UPI ID: 9625065557@upi" << endl;
-        file << "Amount Paid: " << totalBill << endl;
-    }
+        if (htmlFile.is_open())
+        {
+            htmlFile << "<!DOCTYPE html>\n"
+                     << "<html lang=\"en\">\n"
+                     << "<head>\n"
+                     << "    <meta charset=\"UTF-8\">\n"
+                     << "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+                     << "    <title>Taco Bell - UPI Payment QR Code</title>\n"
+                     << "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js\"></script>\n"
+                     << "    <link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap\" rel=\"stylesheet\">\n"
+                     << "    <style>\n"
+                     << "        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }\n"
+                     << "        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at top, #1e1b4b, #0f172a, #030712); color: #f8fafc; padding: 20px; }\n"
+                     << "        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 36px; border-radius: 24px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5); text-align: center; max-width: 440px; width: 100%; animation: popIn 0.5s ease-out; }\n"
+                     << "        @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }\n"
+                     << "        .badge { display: inline-block; padding: 6px 14px; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 9999px; color: #818cf8; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }\n"
+                     << "        h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #a855f7, #6366f1, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n"
+                     << "        p.sub { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }\n"
+                     << "        .qr-wrap { background: #ffffff; padding: 20px; border-radius: 18px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25); margin-bottom: 20px; }\n"
+                     << "        .amount { font-size: 32px; font-weight: 800; color: #38bdf8; margin-bottom: 8px; }\n"
+                     << "        .upi-box { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 12px; font-size: 14px; color: #cbd5e1; font-family: monospace; letter-spacing: 0.5px; margin-bottom: 20px; }\n"
+                     << "        .timer { font-size: 13px; color: #f59e0b; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }\n"
+                     << "        .timer-dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; animation: blink 1s infinite; }\n"
+                     << "        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }\n"
+                     << "    </style>\n"
+                     << "</head>\n"
+                     << "<body>\n"
+                     << "    <div class=\"card\">\n"
+                     << "        <div class=\"badge\">Order #" << orderId << "</div>\n"
+                     << "        <h1>Taco Bell Payment</h1>\n"
+                     << "        <p class=\"sub\">Scan QR code with GPay, PhonePe, or Paytm</p>\n"
+                     << "        <div class=\"qr-wrap\"><div id=\"qrcode\"></div></div>\n"
+                     << "        <div class=\"amount\">Rs." << (int)totalBill << "/-</div>\n"
+                     << "        <div class=\"upi-box\">UPI ID: 9625065557@upi</div>\n"
+                     << "        <div class=\"timer\"><span class=\"timer-dot\"></span> Awaiting Live Confirmation</div>\n"
+                     << "    </div>\n"
+                     << "    <script>\n"
+                     << "        new QRCode(document.getElementById('qrcode'), {\n"
+                     << "            text: \"" << upiLink << "\",\n"
+                     << "            width: 220,\n"
+                     << "            height: 220,\n"
+                     << "            colorDark: '#0f172a',\n"
+                     << "            colorLight: '#ffffff',\n"
+                     << "            correctLevel: QRCode.CorrectLevel.H\n"
+                     << "        });\n"
+                     << "    </script>\n"
+                     << "</body>\n"
+                     << "</html>\n";
+            htmlFile.close();
+            system("start \"\" \"qr_payment.html\"");
+        }
 
-    else if (pm1 == 2)
-    {
-        cout << "please pay on the counter." << endl;
-        cout << "Amount to pay: " << totalBill << "/-" << endl;
-        cout << "-----------------------------" << endl;
-        file << "Payment Method: Cash" << endl;
-        file << "Amount to Pay: " << totalBill << endl;
+        cout << ">> Payment QR Code created (qr_payment.html)" << endl;
+        cout << ">> Amount: Rs." << totalBill << "/- | UPI ID: 9625065557@upi" << endl;
     }
-
     else
     {
-        cout << "invalid input" << endl;
-        file << "Payment: invalid" << endl;
+        paymentMethod = "Cash";
+        cout << "\n>> Payment method set to CASH. Please settle at the counter." << endl;
     }
 
-    cout << "thank you for choosing Taco Bell!" << endl;
+    // Append to food_order.txt
+    ofstream file("food_order.txt", ios::app);
+    if (file.is_open())
+    {
+        file << "===========================================" << endl;
+        file << "Order ID: " << orderId << endl;
+        file << "Timestamp: " << timestamp << endl;
+        file << "Customer Name: " << user << endl;
+        if (drinkPrice > 0)
+        {
+            file << "Drink: " << selectedDrink << " (" << drinkCategory << ")" << endl;
+            file << "Drink Price: " << drinkPrice << endl;
+        }
+        if (mainCoursePrice > 0)
+        {
+            file << "Main Course: " << selectedMainCourse << " (" << mainCourseCategory << ")" << endl;
+            file << "Main Course Price: " << mainCoursePrice << endl;
+        }
+        file << "Total Bill: " << totalBill << endl;
+        file << "Payment Method: " << paymentMethod << endl;
+        if (paymentMethod == "UPI")
+        {
+            file << "UPI ID: 9625065557@upi" << endl;
+            file << "Amount Paid: " << totalBill << endl;
+        }
+        else
+        {
+            file << "Amount to Pay: " << totalBill << endl;
+        }
+        file << "Status: Pending" << endl;
+        file << "===========================================" << endl << endl;
+        file.close();
+    }
 
-    file.close();
+    // Append to orders.json for real-time dashboard sync
+    appendOrderToJson(orderId, user, selectedDrink, drinkPrice, drinkCategory,
+                      selectedMainCourse, mainCoursePrice, mainCourseCategory,
+                      totalBill, paymentMethod, timestamp);
+
+    cout << "\nSUCCESS: Order #" << orderId << " has been logged and synced to Real-Time Dashboard!" << endl;
+    cout << "Thank you for dining with Taco Bell Gourmet." << endl;
+    cout << "========================================================" << endl;
 
     return 0;
 }

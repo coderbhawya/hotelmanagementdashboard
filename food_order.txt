@@ -8,3 +8,88 @@ Total Bill: 338
 Payment Method: UPI
 UPI ID: 9625065557@upi
 Amount Paid: 338
+===========================================
+Order ID: TB-5325
+Timestamp: 2026-08-30 21:25:25
+Customer Name: Rishi
+Drink: Pineapple lime (Juice)
+Drink Price: 159
+Main Course: Cheesy lava taco (Taco)
+Main Course Price: 179
+Total Bill: 338
+Payment Method: UPI
+UPI ID: 9625065557@upi
+Amount Paid: 338
+Status: Pending
+===========================================
+
+===========================================
+Order ID: TB-6368
+Timestamp: 2026-08-30 15:57:05
+Customer Name: Captain Kirk
+Drink: Wild strawberry (Shake)
+Drink Price: 159
+Main Course: Crispy chicken (Wrap)
+Main Course Price: 249
+Total Bill: 408
+Payment Method: UPI
+UPI ID: 9625065557@upi
+Amount Paid: 408
+Status: Pending
+===========================================
+
+===========================================
+Order ID: TB-5508
+Timestamp: 2026-08-30 21:28:28
+Customer Name: Sarah Connor
+Drink: Dulce de leche (Shake)
+Drink Price: 199
+Main Course: Crispy chicken (Wrap)
+Main Course Price: 249
+Total Bill: 448
+Payment Method: Cash
+Amount to Pay: 448
+Status: Pending
+===========================================
+
+===========================================
+Order ID: TB-5684
+Timestamp: 2026-08-30 21:31:24
+Customer Name: Bruce Wayne
+Drink: Dragonfruit berry (Juice)
+Drink Price: 199
+Main Course: Naked taco (Taco)
+Main Course Price: 159
+Total Bill: 358
+Payment Method: UPI
+UPI ID: 9625065557@upi
+Amount Paid: 358
+Status: Pending
+===========================================
+
+===========================================
+Order ID: TB-5844
+Timestamp: 2026-08-30 21:34:04
+Customer Name: Guest Customer
+Drink: Pineapple lime (Juice)
+Drink Price: 159
+Total Bill: 159
+Payment Method: UPI
+UPI ID: 9625065557@upi
+Amount Paid: 159
+Status: Pending
+===========================================
+
+===========================================
+Order ID: TB-2474
+Timestamp: 2026-08-30 17:42:05
+Customer Name: Guest
+Drink: Mango peach (Juice)
+Drink Price: 179
+Item: Mango peach (Juice) x1 - Rs.179
+Total Bill: 188
+Payment Method: Cash
+Amount to Pay: 188
+Status: Pending
+===========================================
+

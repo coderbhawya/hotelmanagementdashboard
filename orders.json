@@ -1,0 +1,193 @@
+[
+  {
+    "id": "TB-1001",
+    "customer": "Sophia Chen",
+    "tableNo": "Suite-204",
+    "drink": "Pineapple Lime (Juice)",
+    "drinkPrice": 159,
+    "mainCourse": "Crispy Chicken (Wrap)",
+    "mainCoursePrice": 249,
+    "items": [
+      {
+        "name": "Pineapple Lime",
+        "category": "Juice",
+        "price": 159,
+        "qty": 1
+      },
+      {
+        "name": "Crispy Chicken",
+        "category": "Wrap",
+        "price": 249,
+        "qty": 1
+      }
+    ],
+    "totalBill": 408,
+    "paymentMethod": "UPI",
+    "status": "Ready",
+    "source": "Room Service",
+    "timestamp": "2026-08-30 22:35:10"
+  },
+  {
+    "id": "TB-1002",
+    "customer": "Alexander Wright",
+    "tableNo": "Table-08",
+    "drink": "Dulce De Leche (Shake)",
+    "drinkPrice": 199,
+    "mainCourse": "Cheesy Lava Taco (Taco)",
+    "mainCoursePrice": 179,
+    "items": [
+      {
+        "name": "Dulce De Leche",
+        "category": "Shake",
+        "price": 199,
+        "qty": 1
+      },
+      {
+        "name": "Cheesy Lava Taco",
+        "category": "Taco",
+        "price": 179,
+        "qty": 1
+      }
+    ],
+    "totalBill": 378,
+    "paymentMethod": "Cash",
+    "status": "Ready",
+    "source": "Dine-In",
+    "timestamp": "2026-08-30 22:28:40"
+  },
+  {
+    "id": "TB-1003",
+    "customer": "Elena Rostova",
+    "tableNo": "Table-12",
+    "drink": "Dragonfruit Berry (Juice)",
+    "drinkPrice": 199,
+    "mainCourse": "Spicy Paneer (Wrap)",
+    "mainCoursePrice": 199,
+    "items": [
+      {
+        "name": "Dragonfruit Berry",
+        "category": "Juice",
+        "price": 199,
+        "qty": 1
+      },
+      {
+        "name": "Spicy Paneer",
+        "category": "Wrap",
+        "price": 199,
+        "qty": 1
+      }
+    ],
+    "totalBill": 398,
+    "paymentMethod": "UPI",
+    "status": "Pending",
+    "source": "POS Kiosk",
+    "timestamp": "2026-08-30 22:38:22"
+  },
+  {
+    "id": "TB-1004",
+    "customer": "Liam Vance",
+    "tableNo": "Suite-101",
+    "drink": "Mexican Chocolate (Shake)",
+    "drinkPrice": 169,
+    "mainCourse": "Naked Chicken Taco (Taco)",
+    "mainCoursePrice": 159,
+    "items": [
+      {
+        "name": "Mexican Chocolate",
+        "category": "Shake",
+        "price": 169,
+        "qty": 1
+      },
+      {
+        "name": "Naked Chicken Taco",
+        "category": "Taco",
+        "price": 159,
+        "qty": 1
+      }
+    ],
+    "totalBill": 328,
+    "paymentMethod": "UPI",
+    "status": "Preparing",
+    "source": "Room Service",
+    "timestamp": "2026-08-30 22:39:15"
+  },
+  {
+    "id": "TB-1005",
+    "customer": "Aarav Sharma",
+    "tableNo": "Table-05",
+    "drink": "Cranberry Crush (Juice)",
+    "drinkPrice": 189,
+    "mainCourse": "Crispy Potato (Wrap)",
+    "mainCoursePrice": 179,
+    "items": [
+      {
+        "name": "Cranberry Crush",
+        "category": "Juice",
+        "price": 189,
+        "qty": 1
+      },
+      {
+        "name": "Crispy Potato",
+        "category": "Wrap",
+        "price": 179,
+        "qty": 1
+      }
+    ],
+    "totalBill": 368,
+    "paymentMethod": "Cash",
+    "status": "Preparing",
+    "source": "Dine-In",
+    "timestamp": "2026-08-30 22:22:18"
+  },
+  {
+    "id": "TB-1006",
+    "customer": "Olivia Wilde",
+    "tableNo": "VIP-02",
+    "drink": "Wild Strawberry (Shake)",
+    "drinkPrice": 159,
+    "mainCourse": "Soft Shell Taco (Taco)",
+    "mainCoursePrice": 129,
+    "items": [
+      {
+        "name": "Wild Strawberry",
+        "category": "Shake",
+        "price": 159,
+        "qty": 1
+      },
+      {
+        "name": "Soft Shell Taco",
+        "category": "Taco",
+        "price": 129,
+        "qty": 1
+      }
+    ],
+    "totalBill": 288,
+    "paymentMethod": "UPI",
+    "status": "Ready",
+    "source": "POS Kiosk",
+    "timestamp": "2026-08-30 22:19:45"
+  },
+  {
+    "id": "TB-2474",
+    "customer": "Guest",
+    "tableNo": "Table-01",
+    "drink": "Mango peach (Juice)",
+    "drinkPrice": 179,
+    "mainCourse": "None",
+    "mainCoursePrice": 0,
+    "items": [
+      {
+        "id": "j3",
+        "name": "Mango peach",
+        "category": "Juice",
+        "price": 179,
+        "qty": 1
+      }
+    ],
+    "totalBill": 188,
+    "paymentMethod": "Cash",
+    "status": "Pending",
+    "source": "Web Kiosk",
+    "timestamp": "2026-08-30 17:42:05"
+  }
+]
