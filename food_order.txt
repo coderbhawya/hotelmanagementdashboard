@@ -6,7 +6,7 @@ Juice Price: 159
 Taco Price: 179
 Total Bill: 338
 Payment Method: UPI
-UPI ID: 9625065557@upi
+UPI ID: 9311515712@upi
 Amount Paid: 338
 ===========================================
 Order ID: TB-5325
@@ -18,7 +18,7 @@ Main Course: Cheesy lava taco (Taco)
 Main Course Price: 179
 Total Bill: 338
 Payment Method: UPI
-UPI ID: 9625065557@upi
+UPI ID: 9311515712@upi
 Amount Paid: 338
 Status: Pending
 ===========================================
@@ -33,7 +33,7 @@ Main Course: Crispy chicken (Wrap)
 Main Course Price: 249
 Total Bill: 408
 Payment Method: UPI
-UPI ID: 9625065557@upi
+UPI ID: 9311515712@upi
 Amount Paid: 408
 Status: Pending
 ===========================================
@@ -62,7 +62,7 @@ Main Course: Naked taco (Taco)
 Main Course Price: 159
 Total Bill: 358
 Payment Method: UPI
-UPI ID: 9625065557@upi
+UPI ID: 9311515712@upi
 Amount Paid: 358
 Status: Pending
 ===========================================
@@ -75,7 +75,7 @@ Drink: Pineapple lime (Juice)
 Drink Price: 159
 Total Bill: 159
 Payment Method: UPI
-UPI ID: 9625065557@upi
+UPI ID: 9311515712@upi
 Amount Paid: 159
 Status: Pending
 ===========================================
@@ -131,4 +131,3 @@ Payment Method: Cash
 Amount to Pay: 169
 Status: Pending
 ===========================================
-

@@ -258,5 +258,28 @@
     "status": "Pending",
     "source": "Web Kiosk",
     "timestamp": "2026-09-01 10:23:43"
+  },
+  {
+    "id": "TB-3199",
+    "customer": "Guest",
+    "tableNo": "Table-01",
+    "drink": "Cranberry crush (Juice)",
+    "drinkPrice": 189,
+    "mainCourse": "None",
+    "mainCoursePrice": 0,
+    "items": [
+      {
+        "id": "j2",
+        "name": "Cranberry crush",
+        "category": "Juice",
+        "price": 189,
+        "qty": 1
+      }
+    ],
+    "totalBill": 198,
+    "paymentMethod": "UPI",
+    "status": "Pending",
+    "source": "Web Kiosk",
+    "timestamp": "2026-09-02 05:04:53"
   }
 ]

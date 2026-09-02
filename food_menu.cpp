@@ -550,7 +550,7 @@ int main()
                      << "        <p class=\"sub\">Scan QR code with GPay, PhonePe, or Paytm</p>\n"
                      << "        <div class=\"qr-wrap\"><div id=\"qrcode\"></div></div>\n"
                      << "        <div class=\"amount\">Rs." << (int)totalBill << "/-</div>\n"
-                     << "        <div class=\"upi-box\">UPI ID: 9625065557@upi</div>\n"
+                     << "        <div class=\"upi-box\">UPI ID: 9311515712@upi</div>\n"
                      << "        <div class=\"timer\"><span class=\"timer-dot\"></span> Awaiting Live Confirmation</div>\n"
                      << "    </div>\n"
                      << "    <script>\n"
@@ -570,7 +570,7 @@ int main()
         }
 
         cout << ">> Payment QR Code created (qr_payment.html)" << endl;
-        cout << ">> Amount: Rs." << totalBill << "/- | UPI ID: 9625065557@upi" << endl;
+        cout << ">> Amount: Rs." << totalBill << "/- | UPI ID: 9311515712@upi" << endl;
     }
     else
     {
@@ -600,7 +600,7 @@ int main()
         file << "Payment Method: " << paymentMethod << endl;
         if (paymentMethod == "UPI")
         {
-            file << "UPI ID: 9625065557@upi" << endl;
+            file << "UPI ID: 9311515712@upi" << endl;
             file << "Amount Paid: " << totalBill << endl;
         }
         else

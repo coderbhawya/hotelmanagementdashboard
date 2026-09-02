@@ -1207,7 +1207,7 @@ function openUpiModal(order) {
     if (amountEl) amountEl.textContent = `₹${order.totalBill}`;
     if (qrTarget) {
         qrTarget.innerHTML = '';
-        const upiLink = `upi://pay?pa=9625065557@upi&pn=TacoBell&am=${Math.round(order.totalBill)}&cu=INR`;
+        const upiLink = `upi://pay?pa=9311515712@upi&pn=TacoBell&am=${Math.round(order.totalBill)}&cu=INR`;
 
         if (typeof QRCode !== 'undefined') {
             new QRCode(qrTarget, {
@@ -1280,7 +1280,7 @@ function initModals() {
     document.getElementById('btn-done-receipt')?.addEventListener('click', closeReceiptModal);
 
     document.getElementById('btn-copy-vpa')?.addEventListener('click', () => {
-        navigator.clipboard.writeText('9625065557@upi');
+        navigator.clipboard.writeText('9311515712@upi');
         showToast('UPI VPA copied to clipboard!', 'success');
         playChime(750, 0.1);
     });

@@ -64,7 +64,7 @@ function appendOrderToLog(order) {
         logEntry += `Total Bill: ${order.totalBill}\n`;
         logEntry += `Payment Method: ${order.paymentMethod || 'Cash'}\n`;
         if (order.paymentMethod === 'UPI') {
-            logEntry += `UPI ID: 9625065557@upi\nAmount Paid: ${order.totalBill}\n`;
+            logEntry += `UPI ID: 9311515712@upi\nAmount Paid: ${order.totalBill}\n`;
         } else {
             logEntry += `Amount to Pay: ${order.totalBill}\n`;
         }
