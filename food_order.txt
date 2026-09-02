@@ -106,3 +106,29 @@ Amount to Pay: 376
 Status: Pending
 ===========================================
 
+===========================================
+Order ID: TB-8537
+Timestamp: 2026-09-01 10:23:43
+Customer Name: test01
+Drink: Mango peach (Juice)
+Drink Price: 179
+Item: Mango peach (Juice) x1 - Rs.179
+Total Bill: 169
+Payment Method: Cash
+Amount to Pay: 169
+Status: Pending
+===========================================
+
+===========================================
+Order ID: TB-4835
+Timestamp: 2026-09-01 10:23:43
+Customer Name: test01
+Drink: Mango peach (Juice)
+Drink Price: 179
+Item: Mango peach (Juice) x1 - Rs.179
+Total Bill: 169
+Payment Method: Cash
+Amount to Pay: 169
+Status: Pending
+===========================================
+

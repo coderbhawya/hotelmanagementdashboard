@@ -135,7 +135,7 @@
     ],
     "totalBill": 368,
     "paymentMethod": "Cash",
-    "status": "Preparing",
+    "status": "Ready",
     "source": "Dine-In",
     "timestamp": "2026-08-30 22:22:18"
   },
@@ -212,5 +212,51 @@
     "status": "Pending",
     "source": "Web Kiosk",
     "timestamp": "2026-08-31 11:47:46"
+  },
+  {
+    "id": "TB-8537",
+    "customer": "test01",
+    "tableNo": "table-01",
+    "drink": "Mango peach (Juice)",
+    "drinkPrice": 179,
+    "mainCourse": "None",
+    "mainCoursePrice": 0,
+    "items": [
+      {
+        "id": "j3",
+        "name": "Mango peach",
+        "category": "Juice",
+        "price": 179,
+        "qty": 1
+      }
+    ],
+    "totalBill": 169,
+    "paymentMethod": "Cash",
+    "status": "Pending",
+    "source": "Web Kiosk",
+    "timestamp": "2026-09-01 10:23:43"
+  },
+  {
+    "id": "TB-4835",
+    "customer": "test01",
+    "tableNo": "table-01",
+    "drink": "Mango peach (Juice)",
+    "drinkPrice": 179,
+    "mainCourse": "None",
+    "mainCoursePrice": 0,
+    "items": [
+      {
+        "id": "j3",
+        "name": "Mango peach",
+        "category": "Juice",
+        "price": 179,
+        "qty": 1
+      }
+    ],
+    "totalBill": 169,
+    "paymentMethod": "Cash",
+    "status": "Pending",
+    "source": "Web Kiosk",
+    "timestamp": "2026-09-01 10:23:43"
   }
 ]
