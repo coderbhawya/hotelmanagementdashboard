@@ -513,7 +513,7 @@ int main()
         paymentMethod = "UPI";
         cout << "\nGenerating UPI Payment QR Code..." << endl;
         
-        string upiLink = "upi://pay?pa=9625065557@upi&pn=TacoBell&am=" + 
+        string upiLink = "upi://pay?pa=9311515712@waaxis&pn=TacoBell&am=" + 
                          to_string((int)totalBill) + "&cu=INR";
 
         ofstream htmlFile("qr_payment.html");
